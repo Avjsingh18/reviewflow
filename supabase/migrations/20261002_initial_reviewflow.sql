@@ -45,8 +45,12 @@ alter table public.qr_codes enable row level security;
 alter table public.qr_scans enable row level security;
 alter table public.review_snapshots enable row level security;
 
-create policy "Owners read their business" on public.businesses for select using (auth.uid() = user_id);
-create policy "Owners update their business" on public.businesses for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy "Owners read their QR codes" on public.qr_codes for select using (exists (select 1 from public.businesses b where b.id = business_id and b.user_id = auth.uid()));
-create policy "Owners read their scans" on public.qr_scans for select using (exists (select 1 from public.qr_codes q join public.businesses b on b.id = q.business_id where q.id = qr_code_id and b.user_id = auth.uid()));
-create policy "Owners read their snapshots" on public.review_snapshots for select using (exists (select 1 from public.businesses b where b.id = business_id and b.user_id = auth.uid()));
+create policy "Owners read their business" on public.businesses for select to authenticated using ((select auth.uid()) = user_id);
+create policy "Owners update their business" on public.businesses for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "Owners read their QR codes" on public.qr_codes for select to authenticated using (exists (select 1 from public.businesses b where b.id = business_id and b.user_id = (select auth.uid())));
+create policy "Owners read their scans" on public.qr_scans for select to authenticated using (exists (select 1 from public.qr_codes q join public.businesses b on b.id = q.business_id where q.id = qr_code_id and b.user_id = (select auth.uid())));
+create policy "Owners read their snapshots" on public.review_snapshots for select to authenticated using (exists (select 1 from public.businesses b where b.id = business_id and b.user_id = (select auth.uid())));
+
+revoke all on table public.businesses, public.qr_codes, public.qr_scans, public.review_snapshots from anon, authenticated;
+grant usage on schema public to service_role;
+grant all privileges on table public.businesses, public.qr_codes, public.qr_scans, public.review_snapshots to service_role;
