@@ -1,0 +1,6 @@
+CREATE TABLE users (id UUID PRIMARY KEY, name VARCHAR(120) NOT NULL, email VARCHAR(255) NOT NULL UNIQUE, password_hash VARCHAR(255) NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now());
+CREATE TABLE businesses (id UUID PRIMARY KEY, user_id VARCHAR(36) NOT NULL, name VARCHAR(160) NOT NULL, google_review_url TEXT NOT NULL, google_place_id VARCHAR(255), slug VARCHAR(160) NOT NULL UNIQUE, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now());
+CREATE TABLE qr_codes (id UUID PRIMARY KEY, business_id UUID NOT NULL REFERENCES businesses(id), tracking_slug VARCHAR(160) NOT NULL UNIQUE, active BOOLEAN NOT NULL DEFAULT true, created_at TIMESTAMPTZ NOT NULL DEFAULT now());
+CREATE TABLE qr_scans (id UUID PRIMARY KEY, qr_code_id UUID NOT NULL, scanned_at TIMESTAMPTZ NOT NULL DEFAULT now(), device_type VARCHAR(30), browser VARCHAR(50), country VARCHAR(70));
+CREATE INDEX qr_scans_qr_code_scanned_at ON qr_scans(qr_code_id, scanned_at);
+CREATE TABLE review_snapshots (id UUID PRIMARY KEY, business_id UUID NOT NULL, rating DECIMAL(2,1) NOT NULL, total_reviews INTEGER NOT NULL, snapshot_date DATE NOT NULL, source VARCHAR(30) NOT NULL, UNIQUE(business_id,snapshot_date));

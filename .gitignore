@@ -1,0 +1,11 @@
+node_modules
+.next
+.env
+.env.local
+.env.*.local
+backend/target
+backend/.gradle
+backend/build
+tsconfig.tsbuildinfo
+.ppt-build/
+~$*.pptx

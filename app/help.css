@@ -1,0 +1,12 @@
+.help {
+  align-items: flex-start;
+  font-size: 13px;
+}
+
+.help > span:first-letter {
+  background: transparent;
+  color: inherit;
+  border-radius: 0;
+  font-weight: inherit;
+  padding: 0;
+}

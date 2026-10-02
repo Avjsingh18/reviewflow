@@ -1,0 +1,3 @@
+package com.reviewflow.domain;
+import jakarta.persistence.*; import java.time.*; import java.util.UUID;
+@Entity @Table(name="businesses") public class Business { @Id @GeneratedValue(strategy=GenerationType.UUID) public UUID id; @Column(nullable=false,unique=true) public String slug; @Column(nullable=false) public String name; @Column(nullable=false,name="google_review_url") public String googleReviewUrl; @Column(name="google_place_id") public String googlePlaceId; @Column(nullable=false,name="user_id") public UUID userId; @Column(name="created_at") public Instant createdAt=Instant.now(); @Column(name="updated_at") public Instant updatedAt=Instant.now(); }

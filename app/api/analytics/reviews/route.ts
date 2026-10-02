@@ -1,0 +1,3 @@
+import { NextRequest, NextResponse } from "next/server";
+import { error, requireUser } from "@/lib/api";
+export async function GET(request: NextRequest) { const auth = await requireUser(request); if ("response" in auth) return auth.response; const { data: business } = await auth.supabase.from("businesses").select("id").eq("user_id", auth.user.id).maybeSingle(); if (!business) return error("Business not found.", 404); const { data } = await auth.supabase.from("review_snapshots").select("snapshot_date,total_reviews").eq("business_id", business.id).order("snapshot_date"); return NextResponse.json((data || []).map(x => ({ date: x.snapshot_date, value: x.total_reviews }))); }

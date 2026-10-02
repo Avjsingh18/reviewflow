@@ -1,0 +1,3 @@
+"use client";
+import {useState} from "react";import Link from "next/link";import {ChevronUp,LogOut,Settings} from "lucide-react";
+export default function AccountMenu(){const [open,setOpen]=useState(false);const logout=()=>{localStorage.removeItem("reviewflow_token");localStorage.removeItem("reviewflow_business");window.location.assign("/login")};return <div className="account-menu"><button onClick={()=>setOpen(!open)} className="account-trigger">Account <ChevronUp/></button>{open&&<div className="account-popover"><Link href="/settings"><Settings/>Settings</Link><button onClick={logout}><LogOut/>Log out</button></div>}</div>}
