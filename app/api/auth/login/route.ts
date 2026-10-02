@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { error } from "@/lib/api";
-import { supabasePublic } from "@/lib/supabase/server";
+import { supabaseAdmin, supabasePublic } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
@@ -9,5 +9,10 @@ export async function POST(request: NextRequest) {
   if (!email || !password) return error("Enter your email and password.");
   const { data, error: signInError } = await supabasePublic().auth.signInWithPassword({ email, password });
   if (signInError || !data.session) return error("Incorrect email or password.", 401);
-  return NextResponse.json({ token: data.session.access_token, businessName: data.user.user_metadata.business_name || "" });
+  const { data: business } = await supabaseAdmin().from("businesses").select("name").eq("user_id", data.user.id).maybeSingle();
+  return NextResponse.json({
+    token: data.session.access_token,
+    businessName: business?.name || data.user.user_metadata.business_name || "",
+    onboardingRequired: !business,
+  });
 }
